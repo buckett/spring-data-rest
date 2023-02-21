@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.*;
 import lombok.Data;
 import lombok.Getter;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -158,6 +159,14 @@ class SpelPathUnitTests {
 				.withMessageContaining(Person.class.getName()) //
 				.withMessageContaining(path); //
 	}
+	
+	@Test
+	void failsOnUnsupportedType() {
+		Person person = new Person();
+		SpelPath.untyped("/birthday")
+				.bindForWrite(Person.class, context)
+				.setValue(person, "2000-01-01");
+	}
 
 	@Test
 	void mapsRenamedProperty() {
@@ -175,6 +184,8 @@ class SpelPathUnitTests {
 		@JsonIgnore String hiddenProperty;
 		@Getter(onMethod = @__(@JsonIgnore)) String hiddenGetter;
 		@JsonProperty("demaner") String renamed;
+		// This field isn't supported by the standard ConversionService.
+		LocalDate birthday;
 	}
 
 	@Data
